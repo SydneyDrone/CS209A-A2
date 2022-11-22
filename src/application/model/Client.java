@@ -19,18 +19,28 @@ public class Client {
         this("localhost", 1919);
     }
 
-    public void send(String msg) {
-        printWriter.println(msg);
+    public void send(String message) {
+        printWriter.println(message);
     }
 
     public String receive() {
-        String msg = null;
+        String message = null;
         try {
-            msg = bufferedReader.readLine();
+            message = bufferedReader.readLine();
         } catch (IOException e) {
             e.printStackTrace();
         }
-        return msg;
+        return message;
+    }
+
+    public void close() {
+        try {
+            if (socket != null) {
+                socket.close();
+            }
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
     }
 }
 

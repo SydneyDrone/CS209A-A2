@@ -51,29 +51,29 @@ public class Controller implements Initializable {
     public void initialize(URL location, ResourceBundle resources) {
         game_panel.setOnMouseClicked(null);
         connectButton.setOnAction(event -> {
-            if (!connect) {
-                try {
-                    client = new Client();
-                    connect = true;
-                    receiveThread = new Thread(() -> {
-                        String msg;
-                        while ((msg = client.receive()) != null) {
-                            String tempMessage = msg;
-                            Platform.runLater(() -> {
-                                parseMessage(tempMessage);
-                                connectionText.setText(tempMessage);
-                            });
-                        }
-                        Platform.runLater(() -> connectionText.setText("Connection closed"));
-                    });
-                    receiveThread.start();
-                } catch (Exception e) {
-                    Platform.runLater(() -> connectionText.setText("Connection Failed: +" + e.getMessage()));
-                }
-            } else {
-                Platform.runLater(() -> connectionText.setText("Already connected"));
+            if (connect) return;
+            try {
+                client = new Client();
+                connect = true;
+                receiveThread = new Thread(() -> {
+                    String msg;
+                    while ((msg = client.receive()) != null) {
+                        String tempMessage = msg;
+                        Platform.runLater(() -> {
+                            parseMessage(tempMessage);
+                            connectionText.setText(tempMessage);
+                        });
+                    }
+                });
+                receiveThread.start();
+            } catch (Exception e) {
+                Platform.runLater(() -> connectionText.setText("Connection Failed: +" + e.getMessage()));
             }
         });
+        Platform.runLater(() -> Runtime.getRuntime().addShutdownHook(new Thread(() -> {
+            client.send("exit client");
+            client.close();
+        })));
     }
 
     private void parseMessage(String message) {
@@ -87,6 +87,31 @@ public class Controller implements Initializable {
                 break;
             case "match":
                 changeMatchStatus(messages[1], messages[2]);
+                break;
+            case "exit":
+                changeExitStatus(messages[1]);
+
+                break;
+        }
+    }
+
+    private void changeExitStatus(String message) {
+        switch (message) {
+            case "server":
+                Platform.runLater(() -> {
+                    connectionText.setText("Server closed");
+                    matchText.setText("");
+                    gameplayText.setText("Game aborted");
+                    game_panel.setOnMouseClicked(null);
+                });
+                break;
+            case "client":
+                Platform.runLater(() -> {
+                    connectionText.setText("The other client closed");
+                    matchText.setText("");
+                    gameplayText.setText("Game aborted");
+                    game_panel.setOnMouseClicked(null);
+                });
                 break;
         }
     }

@@ -65,6 +65,11 @@ public class Server {
                 System.out.println("Connection closed");
             });
             board = new Board(0);
+            Runtime.getRuntime().addShutdownHook(new Thread(() -> {
+                send("exit server");
+                close();
+            }));
+
         }
 
         private void parseMessage(String tempMessage) {
@@ -72,14 +77,21 @@ public class Server {
             switch (message[0]) {
                 case "step":
                     board.takeStep(Integer.parseInt(message[1]), Integer.parseInt(message[2]), Integer.parseInt(message[3]));
-                    for (Player inRoomPlayer : room.players) {
-                        if (inRoomPlayer != player) {
-                            clientThreadHashMap.get(inRoomPlayer).send("step " + message[1] + " " + message[2] + " " + message[3]);
-                        }
-                    }
+                    informAnotherClient("step " + message[1] + " " + message[2] + " " + message[3]);
+                    break;
+                case "exit":
+                    informAnotherClient("exit client");
                     break;
                 default:
                     System.err.println("Invalid message!");
+            }
+        }
+
+        private void informAnotherClient(String message) {
+            for (Player inRoomPlayer : room.players) {
+                if (inRoomPlayer != player) {
+                    clientThreadHashMap.get(inRoomPlayer).send(message);
+                }
             }
         }
 
