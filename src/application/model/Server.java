@@ -116,7 +116,7 @@ public class Server {
                     this.room = room;
                     isMatched = true;
                     if (!room.isFull()) {
-                        send("match waiting "+room.id);
+                        send("match waiting " + room.id);
                     } else {
                         int first = random.nextInt(2) * 2 - 1;
                         for (Player inRoomPlayer : room.players) {
@@ -133,7 +133,7 @@ public class Server {
                 rooms.add(room);
                 room.addPlayer(player);
                 this.room = room;
-                send("match waiting "+room.id);
+                send("match waiting " + room.id);
             }
         }
 

@@ -16,6 +16,7 @@ public class Room {
     public Room() {
         this(0);
     }
+
     public boolean isFull() {
         return players.size() == CAPACITY;
     }

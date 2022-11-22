@@ -18,7 +18,6 @@ import javafx.scene.text.Text;
 import java.net.URL;
 import java.util.ResourceBundle;
 
-import static application.model.Board.*;
 
 public class Controller implements Initializable {
     private static final int BOUND = 90;
@@ -145,13 +144,13 @@ public class Controller implements Initializable {
 
     private void drawChess(int i, int j, int player) {
         switch (player) {
-            case PLAYER1:
+            case Board.PLAYER1:
                 drawCircle(i, j);
                 break;
-            case PLAYER2:
+            case Board.PLAYER2:
                 drawCross(i, j);
                 break;
-            case EMPTY:
+            case Board.EMPTY:
                 break;
             default:
                 System.err.println("Invalid value!");
